@@ -12,26 +12,28 @@ const cannonBuild = async () => {
 };
 
 describe('Relayer', function () {
-	it('Should work independent of cannon tooling', async function () {
-		const [user] = await hardhat.ethers.getSigners();
+	if (hardhat.network.name === 'hardhat') {
+		it('Should work on hardhat', async function () {
+			const [user] = await hardhat.ethers.getSigners();
 
-		const Relayer = await ethers.getContractFactory('InfinexERC2771Forwarder');
-		const relayer = await Relayer.deploy();
+			const Relayer = await ethers.getContractFactory('InfinexERC2771Forwarder');
+			const relayer = await Relayer.deploy();
 
-		const Greeter = await ethers.getContractFactory('ForwarderGreeterTest');
-		const greeter = await Greeter.deploy('Hello', relayer.address);
+			const Greeter = await ethers.getContractFactory('ForwarderGreeterTest');
+			const greeter = await Greeter.deploy('Hello', relayer.address);
 
-		// Here's the signed message to send to the relayer
-		const request = await signMetaTxRequest(user, relayer, {
-			from: user.address,
-			to: greeter.address,
-			data: greeter.interface.encodeFunctionData('greet'),
+			// Here's the signed message to send to the relayer
+			const request = await signMetaTxRequest(user, relayer, {
+				from: user.address,
+				to: greeter.address,
+				data: greeter.interface.encodeFunctionData('greet'),
+			});
+
+			// The forwarder should be able to execute the transaction on the user's behalf at this stage
+			const tx = await relayer.execute(request);
+			await tx.wait();
 		});
-
-		// The forwarder should be able to execute the transaction on the user's behalf at this stage
-		const tx = await relayer.execute(request);
-		await tx.wait();
-	});
+	}
 
 	if (hardhat.network.name === 'cannon') {
 		it('Should work on cannon / anvil', async function () {
