@@ -1,0 +1,10 @@
+name = "anvil-revert-example"
+version = "0.0.1"
+
+[contract.Relayer]
+artifact = "InfinexERC2771Forwarder"
+
+[contract.ForwarderGreeterTest]
+artifact = "ForwarderGreeterTest"
+dependsOn = ["contracts.Relayer"]
+args = ["Hello", "<%= contracts.Relayer.address %>"]
