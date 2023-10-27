@@ -13,7 +13,7 @@ assembly {
 - Their reasons for doing so are explained in that file starting on line 377.
 - The `if` statement there definitely evaluates to false, and the `invalid()` opcode is not being run.
   - You can verify this by commenting out the `assembly { invalid() }` and replacing it with `revert("stuff")`. It will then not revert, proving the `if` statement is not running.
-- Running this code on hardhat works.
+- Running this code with the `invalid()` opcode there inside the if statement on hardhat works.
   - To test this, run `pnpm t -- --network hardhat`. You should get output similar to:
 
 ```console
